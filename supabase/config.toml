@@ -1,0 +1,13 @@
+project_id = "gjetirszlhvjhngwfccy"
+
+[functions.verify-access-code]
+verify_jwt = false
+
+[functions.start-game]
+verify_jwt = false
+
+[functions.draw-card]
+verify_jwt = false
+
+[functions.timer-tick]
+verify_jwt = false
