@@ -1,5 +1,4 @@
 // Edge function: verify-access-code
-// Validates a global ACCESS_CODE for the currently signed-in (anonymous) user.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -36,10 +35,11 @@ Deno.serve(async (req) => {
     if (userErr || !userData?.user) return json({ error: "Unauthorized" }, 401);
 
     const { code } = (await req.json().catch(() => ({}))) as { code?: string };
-    const expected = Deno.env.get("ACCESS_CODE");
-    if (!expected) return json({ error: "ACCESS_CODE not configured" }, 500);
+    
+    // Kode akses dengan fallback default
+    const expected = Deno.env.get("ACCESS_CODE") || "akusayangarsepat";
 
-    if (!code || code !== expected) {
+    if (!code || code.trim().toLowerCase() !== expected.trim().toLowerCase()) {
       return json({ valid: false });
     }
 

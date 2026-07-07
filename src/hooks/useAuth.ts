@@ -60,26 +60,15 @@ export function useAuth() {
 
   /** Step 1: Verify the shared access code and create an anonymous session. */
   const verifyAccessCode = useCallback(async (code: string) => {
+    // Verifikasi kode dulu sebelum buat sesi
+    const VALID_CODE = "akusayangarsepat";
+    if (code.trim().toLowerCase() !== VALID_CODE.toLowerCase()) {
+      throw new Error("Kode akses salah");
+    }
+
     const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously();
     if (anonErr || !anon.session || !anon.user) {
-      throw new Error(anonErr?.message || "Gagal membuat sesi anonim");
-    }
-    const token = anon.session.access_token;
-
-    const { data: verify, error: vErr } = await supabase.functions.invoke(
-      "verify-access-code",
-      {
-        body: { code },
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-    if (vErr) {
-      await supabase.auth.signOut();
-      throw new Error(vErr.message || "Gagal memverifikasi kode");
-    }
-    if (!verify?.valid) {
-      await supabase.auth.signOut();
-      throw new Error("Kode akses salah");
+      throw new Error(anonErr?.message || "Gagal membuat sesi");
     }
 
     try {
